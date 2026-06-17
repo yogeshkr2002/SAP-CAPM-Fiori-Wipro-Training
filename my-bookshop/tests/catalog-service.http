@@ -1,0 +1,68 @@
+### Variables
+@baseUrl = http://localhost:4004/odata/v4/catalog
+
+### Get service document (lists all entities in CatalogService)
+GET {{baseUrl}}/
+
+### Get all Books
+GET {{baseUrl}}/Books
+
+### Get all Books with author expanded
+GET {{baseUrl}}/Books?$expand=author
+
+### Get a single Book by ID (replace with a real ID from your CSV)
+GET {{baseUrl}}/Books(REPLACE-WITH-REAL-UUID)
+
+### Filter Books by price greater than 50
+GET {{baseUrl}}/Books?$filter=price gt 50
+
+### Select only title and price fields
+GET {{baseUrl}}/Books?$select=title,price
+
+### Get all Authors with their books expanded
+GET {{baseUrl}}/Authors?$expand=books
+
+### Create a new Book (POST)
+POST {{baseUrl}}/Books
+Content-Type: application/json
+
+{
+  "title": "Wuthering Heights",
+  "descr": "A classic gothic novel",
+  "stock": 12,
+  "price": 15.50,
+  "currency": "USD"
+}
+
+### Update a Book (PATCH) - replace with real ID
+PATCH {{baseUrl}}/Books(REPLACE-WITH-REAL-UUID)
+Content-Type: application/json
+
+{
+  "stock": 99
+}
+
+### Delete a Book - replace with real ID
+DELETE {{baseUrl}}/Books(REPLACE-WITH-REAL-UUID)
+
+### Test stock validation - should fail with 400
+POST {{baseUrl}}/Books
+Content-Type: application/json
+
+{
+  "title": "Invalid Book",
+  "stock": -5,
+  "price": 10.00,
+  "currency": "USD"
+}
+
+### Test READ transformation - titles should come back UPPERCASE
+GET {{baseUrl}}/Books
+
+### Test UPDATE logging - check BAS terminal console for log output
+PATCH {{baseUrl}}/Books(REPLACE-WITH-REAL-UUID)
+Content-Type: application/json
+
+{
+  "stock": 50
+}
