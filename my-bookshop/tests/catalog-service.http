@@ -11,7 +11,7 @@ GET {{baseUrl}}/Books
 GET {{baseUrl}}/Books?$expand=author
 
 ### Get a single Book by ID (replace with a real ID from your CSV)
-GET {{baseUrl}}/Books(REPLACE-WITH-REAL-UUID)
+GET {{baseUrl}}/Books(17154825-a41f-4962-84aa-2e9f7598ca23)
 
 ### Filter Books by price greater than 50
 GET {{baseUrl}}/Books?$filter=price gt 50
@@ -35,7 +35,7 @@ Content-Type: application/json
 }
 
 ### Update a Book (PATCH) - replace with real ID
-PATCH {{baseUrl}}/Books(REPLACE-WITH-REAL-UUID)
+PATCH {{baseUrl}}/Books(17154825-a41f-4962-84aa-2e9f7598ca23)
 Content-Type: application/json
 
 {
@@ -43,7 +43,7 @@ Content-Type: application/json
 }
 
 ### Delete a Book - replace with real ID
-DELETE {{baseUrl}}/Books(REPLACE-WITH-REAL-UUID)
+DELETE {{baseUrl}}/Books(17154825-a41f-4962-84aa-2e9f7598ca23)
 
 ### Test stock validation - should fail with 400
 POST {{baseUrl}}/Books
@@ -55,14 +55,34 @@ Content-Type: application/json
   "price": 10.00,
   "currency": "USD"
 }
-
-### Test READ transformation - titles should come back UPPERCASE
-GET {{baseUrl}}/Books
-
-### Test UPDATE logging - check BAS terminal console for log output
-PATCH {{baseUrl}}/Books(REPLACE-WITH-REAL-UUID)
+###======================================================
+### Test not-null validation - missing title should fail
+POST {{baseUrl}}/Books
 Content-Type: application/json
 
 {
-  "stock": 50
+  "stock": 5,
+  "price": 20.00
 }
+
+### Test @assert.range - price too high should fail
+POST {{baseUrl}}/Books
+Content-Type: application/json
+
+{
+  "title": "Overpriced Book",
+  "stock": 1,
+  "price": 999999
+}
+
+### Test default values - omit stock and currency
+POST {{baseUrl}}/Books
+Content-Type: application/json
+
+{
+  "title": "Defaults Test Book",
+  "price": 25.00
+}
+
+### Confirm stockValue is calculated correctly
+GET {{baseUrl}}/Books?$select=title,stock,price,stockValue
