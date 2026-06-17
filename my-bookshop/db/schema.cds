@@ -6,7 +6,7 @@ entity Books {
   descr     : String(1111);
   stock     : Integer;
   price     : Decimal(9,2);
-  currency  : String(3);
+  // currency  : String(3);
   author    : Association to Authors;
 }
 
