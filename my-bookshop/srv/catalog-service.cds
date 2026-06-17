@@ -7,6 +7,7 @@ service CatalogService {
     { grant: 'READ', to: 'any' },
     { grant: ['CREATE', 'UPDATE', 'DELETE'], to: 'admin' }
   ]
+  @odata.draft.enabled
   entity Books as projection on my.Books;
 
   entity Authors as projection on my.Authors;
