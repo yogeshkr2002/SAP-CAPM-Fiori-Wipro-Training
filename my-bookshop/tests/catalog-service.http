@@ -86,3 +86,31 @@ Content-Type: application/json
 
 ### Confirm stockValue is calculated correctly
 GET {{baseUrl}}/Books?$select=title,stock,price,stockValue
+
+###======================================================
+### Bob (reader) tries to READ - should succeed
+GET {{baseUrl}}/Books
+Authorization: Basic bob:bob
+
+### Bob (reader) tries to CREATE - should fail with 403
+POST {{baseUrl}}/Books
+Authorization: Basic bob:bob
+Content-Type: application/json
+
+{
+  "title": "Unauthorized Book",
+  "price": 10.00
+}
+
+### Alice (admin) tries to CREATE - should succeed
+POST {{baseUrl}}/Books
+Authorization: Basic alice:alice
+Content-Type: application/json
+
+{
+  "title": "Admin Created Book",
+  "price": 10.00
+}
+
+### No credentials at all - should fail with 401
+GET {{baseUrl}}/Books
