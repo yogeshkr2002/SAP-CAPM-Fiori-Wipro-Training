@@ -1,0 +1,66 @@
+### Get all Books first to grab a real ID (copy one ID from the response below)
+GET http://localhost:4004/odata/v4/catalog/Books
+Authorization: Basic alice:alice
+
+###
+
+### Restock a book — happy path
+### IsActiveEntity=true is required because Books is draft-enabled — its real key is (ID, IsActiveEntity).
+POST http://localhost:4004/odata/v4/catalog/Books(ID=7030288e-fdc4-46e0-af1c-8d5cff39cc6f,IsActiveEntity=true)/CatalogService.restock
+Authorization: Basic alice:alice
+Content-Type: application/json
+
+{
+  "quantity": 20
+}
+
+###
+
+### Restock with invalid quantity — should return 400 from OUR validation
+POST http://localhost:4004/odata/v4/catalog/Books(ID=7030288e-fdc4-46e0-af1c-8d5cff39cc6f,IsActiveEntity=true)/CatalogService.restock
+Authorization: Basic alice:alice
+Content-Type: application/json
+
+{
+  "quantity": -5
+}
+
+###
+
+### Restock a non-existent book — should return 404 from OUR handler
+POST http://localhost:4004/odata/v4/catalog/Books(ID=00000000-0000-0000-0000-000000000000,IsActiveEntity=true)/CatalogService.restock
+Authorization: Basic alice:alice
+Content-Type: application/json
+
+{
+  "quantity": 10
+}
+
+###
+
+### Call getStockValue function — happy path
+GET http://localhost:4004/odata/v4/catalog/Books(ID=7030288e-fdc4-46e0-af1c-8d5cff39cc6f,IsActiveEntity=true)/CatalogService.getStockValue()
+Authorization: Basic alice:alice
+
+###
+
+### Call getStockValue on non-existent book — should return 404 from OUR handler
+GET http://localhost:4004/odata/v4/catalog/Books(ID=00000000-0000-0000-0000-000000000000,IsActiveEntity=true)/CatalogService.getStockValue()
+Authorization: Basic alice:alice
+
+###
+
+### Negative check: bob (reader role) should be FORBIDDEN from restock — 403 expected, correct reason this time (role mismatch, not a missing grant)
+POST http://localhost:4004/odata/v4/catalog/Books(ID=7030288e-fdc4-46e0-af1c-8d5cff39cc6f,IsActiveEntity=true)/CatalogService.restock
+Authorization: Basic bob:bob
+Content-Type: application/json
+
+{
+  "quantity": 5
+}
+
+###
+
+### Negative check: bob (reader role) SHOULD be allowed to call getStockValue, since we granted it to 'any'
+GET http://localhost:4004/odata/v4/catalog/Books(ID=7030288e-fdc4-46e0-af1c-8d5cff39cc6f,IsActiveEntity=true)/CatalogService.getStockValue()
+Authorization: Basic bob:bob
